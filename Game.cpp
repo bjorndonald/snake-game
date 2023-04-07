@@ -271,5 +271,5 @@ void Game::draw()
     }
 
     cout << "Press W, A, S, D for UP, LEFT, DOWN, RIGHT" << endl;
-    cout << "Score: " << fruitCount * 2 << endl;
+    cout << "Score: " << fruitCount * 5 << endl;
 }
