@@ -1,7 +1,7 @@
 #include "Game.hpp"
-#include "Instructions.hpp"
-#include "History.hpp"
-#include "GameState.hpp"
+// #include "Instructions.hpp"
+// #include "History.hpp"
+// #include "GameState.hpp"
 #include <iostream>
 #include <iomanip>
 #include <unistd.h>
@@ -13,7 +13,7 @@
 #define key 1
 
 using namespace std;
-
+// Fail system
 char getch()
 {
     char buf = 0;
@@ -69,7 +69,7 @@ Game::Game()
     height = DEFAULT_HEIGHT;
     snake = Snake(width, height);
     step = 0;
-    history = History();
+    // history = History();
 }
 
 Game::Game(int &width, int &height)
@@ -80,7 +80,7 @@ Game::Game(int &width, int &height)
     cells = new int[width * height];
     snake = Snake(width, height);
     step = 0;
-    history = History();
+    // history = History();
 }
 
 Game::~Game()
@@ -143,8 +143,8 @@ void Game::input()
 
     if (input == 'a' || input == 'w' || input == 's' || input == 'd')
     {
-        GameState state = GameState(direction, step);
-        history.push(state);
+        // GameState state = GameState(direction, step);
+        // history.push(state);
     }
 }
 
@@ -160,13 +160,23 @@ void Game::setup()
 
     while (true)
     {
+        if ((step % (width - fruitCount)) == 0)
+        {
+            short range = width * height + 1;
+            fruitPosition = rand() % range;
+        }
+
         input();
         Clear();
         draw();
         snakeMove();
+        if (gameOver)
+            break;
         usleep(1000000);
         step++;
     }
+    cout << endl
+         << "Game Over" << endl;
 }
 
 void Game::snakeMove()
@@ -175,10 +185,11 @@ void Game::snakeMove()
     int end = snake.getBody().back();
     int j = end % height;
     int i = (end / width);
-    int index;
+    short index;
 
     if (direction == LEFT)
     {
+
         index = (i * width) + --j;
     }
     if (direction == RIGHT)
@@ -193,16 +204,43 @@ void Game::snakeMove()
     {
         index = (++i * width) + j;
     }
+    if ((i == 0 || i == width || j == 0 || j == height))
+    {
+        gameOver = true;
+        return;
+    }
+    if (index == fruitPosition)
+    {
+        fruitCount++;
+        short range = width * height + 1;
+        fruitPosition = rand() % range;
+        snake.addLength();
+    }
+
     snake.push(index);
 }
 
 void Game::draw()
 {
-
     for (short index = 0; index < width * height; index++)
     {
         int i = index % height;
         int j = (index / width);
+        if (snake.isLocated(index))
+        {
+            cout << setw(2) << "O";
+            continue;
+        }
+        if (index == fruitPosition)
+        {
+            cout << setw(2) << "Q";
+            continue;
+        }
+        if (!snake.isLocated(index) && j != height - 1 && j != 0)
+        {
+            cout << setw(2) << " ";
+            continue;
+        }
 
         if (i == width - 1)
         {
@@ -212,17 +250,6 @@ void Game::draw()
         if (i == 0)
         {
             cout << "[~";
-            continue;
-        }
-
-        if (snake.isLocated(index))
-        {
-            cout << setw(2) << "O";
-            continue;
-        }
-        if (!snake.isLocated(index) && j != height - 1 && j != 0)
-        {
-            cout << setw(2) << " ";
             continue;
         }
 
@@ -244,4 +271,5 @@ void Game::draw()
     }
 
     cout << "Press W, A, S, D for UP, LEFT, DOWN, RIGHT" << endl;
+    cout << "Score: " << fruitCount * 2 << endl;
 }

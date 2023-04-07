@@ -3,13 +3,18 @@
 using namespace std;
 void Snake::pop()
 {
+    previous = body.front();
     body.pop_front();
 }
 deque<int> Snake::getBody() const
 {
     return body;
 }
-void Snake::push(int &position)
+void Snake::addLength()
+{
+    body.push_front(previous);
+}
+void Snake::push(short &position)
 {
     body.push_back(position);
 }
@@ -25,12 +30,14 @@ bool Snake::isLocated(short &position)
 Snake::Snake()
 {
 }
+
 Snake::Snake(int &width, int &height)
 {
     body = deque<int>();
     int verticalMiddle = width / 2;
     int i = 1;
     int j = verticalMiddle - 1;
+    previous = j;
     while (i < 6)
     {
         int index = (i * width) + j;
