@@ -160,10 +160,11 @@ void Game::setup()
 
     while (true)
     {
+        // cin.ignore(numeric_limits<streamsize>::max());
         if ((step % (width - fruitCount)) == 0)
         {
-            short range = width * height + 1;
-            fruitPosition = rand() % range;
+            short range = width * height;
+            fruitPosition = 21 + (rand() % (range - 21));
         }
 
         input();
@@ -212,8 +213,8 @@ void Game::snakeMove()
     if (index == fruitPosition)
     {
         fruitCount++;
-        short range = width * height + 1;
-        fruitPosition = rand() % range;
+        short range = width * height;
+        fruitPosition = 21 + (rand() % (range - 21));
         snake.addLength();
     }
 
@@ -226,6 +227,7 @@ void Game::draw()
     {
         int i = index % height;
         int j = (index / width);
+
         if (snake.isLocated(index))
         {
             cout << setw(2) << "O";
@@ -234,11 +236,6 @@ void Game::draw()
         if (index == fruitPosition)
         {
             cout << setw(2) << "Q";
-            continue;
-        }
-        if (!snake.isLocated(index) && j != height - 1 && j != 0)
-        {
-            cout << setw(2) << " ";
             continue;
         }
 
@@ -252,10 +249,15 @@ void Game::draw()
             cout << "[~";
             continue;
         }
+        if (!snake.isLocated(index) && j != height - 1 && j != 0)
+        {
+            cout << setw(2) << " ";
+            continue;
+        }
 
         if (j == height - 1)
         {
-            cout << setw(2) << '-';
+            cout << setw(2) << "-";
             continue;
         }
         if (j == 0)
